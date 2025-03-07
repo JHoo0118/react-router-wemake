@@ -9,9 +9,7 @@ export const meta: MetaFunction = () => {
 };
 
 export function loader({ request }: Route.LoaderArgs) {
-  return {
-    products: [], // Add products fetch logic
-  };
+  return { hello: "world" };
 }
 
 export default function ProductsPage({ loaderData }: Route.ComponentProps) {
