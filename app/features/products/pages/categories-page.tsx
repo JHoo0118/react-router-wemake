@@ -1,24 +1,26 @@
-import type { MetaFunction } from "react-router";
+import { Hero } from "~/common/components/hero";
+import { CategoryCard } from "../components/category-card";
 import type { Route } from "./+types/categories-page";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Categories | ProductHunt Clone" },
-    { name: "description", content: "Browse products by category" },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Categories | ProductHunt Clone" },
+  { name: "description", content: "Browse products by category" },
+];
 
-export function loader({ request }: Route.LoaderArgs) {
-  return {
-    categories: [], // Add categories fetch logic
-  };
-}
-
-export default function CategoriesPage({ loaderData }: Route.ComponentProps) {
+export default function CategoriesPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Categories</h1>
-      {/* Add categories grid */}
+    <div className="space-y-10">
+      <Hero title="Categories" subtitle="Browse products by category" />
+      <div className="grid grid-cols-4 gap-10">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <CategoryCard
+            key={`categoryId-${index}`}
+            id={`categoryId-${index}`}
+            name="Category Name"
+            description="Category Description"
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,27 +1,37 @@
-import type { MetaFunction } from "react-router";
+import { Hero } from "~/common/components/hero";
+import { ProductCard } from "../components/product-card";
+import ProductPagination from "~/common/components/product-pagination";
 import type { Route } from "./+types/category-page";
 
-export const meta: MetaFunction = ({ params }) => {
-  // Type assertion for params
-  const { category } = params as { category: string };
+export const meta = ({ params }: Route.MetaArgs) => {
   return [
-    { title: `${category} | ProductHunt Clone` },
-    { name: "description", content: `Browse ${category} products` },
+    { title: `Developer Tools | ProductHunt Clone` },
+    { name: "description", content: `Browse Developer Tools products` },
   ];
 };
 
-export function loader({ params }: Route.LoaderArgs) {
-  return {
-    category: params.category,
-    products: [], // Add category products fetch logic
-  };
-}
-
-export default function CategoryPage({ loaderData }: Route.ComponentProps) {
+export default function CategoryPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">{loaderData.category}</h1>
-      {/* Add category products grid */}
+    <div className="space-y-10">
+      <Hero
+        title={"Developer Tools"}
+        subtitle={`Tools for developers to build products faster`}
+      />
+
+      <div className="space-y-5 w-full max-w-screen-md mx-auto">
+        {Array.from({ length: 11 }).map((_, index) => (
+          <ProductCard
+            key={`productId-${index}`}
+            id={`productId-${index}`}
+            name="Product Name"
+            description="Product Description"
+            commentsCount={12}
+            viewsCount={12}
+            votesCount={120}
+          />
+        ))}
+      </div>
+      <ProductPagination totalPages={10} />
     </div>
   );
 }
