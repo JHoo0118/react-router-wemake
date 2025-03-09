@@ -15,6 +15,20 @@
       "when": 1741514687489,
       "tag": "0001_new_mongoose",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741515104435,
+      "tag": "0002_classy_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1741515389896,
+      "tag": "0003_steep_scalphunter",
+      "breakpoints": true
     }
   ]
 }
