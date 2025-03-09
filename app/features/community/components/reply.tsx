@@ -67,7 +67,7 @@ export function Reply({
       {topLevel && (
         <div className="pl-20 w-full">
           <Reply
-            username="Nicolas"
+            username="Hoo"
             avatarUrl="https://github.com/serranoarevalo.png"
             content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
             timestamp="12 hours ago"

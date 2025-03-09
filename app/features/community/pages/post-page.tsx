@@ -61,7 +61,7 @@ export default function PostPage() {
                   What is the best productivity tool?
                 </h2>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>@nico</span>
+                  <span>@hoo</span>
                   <DotIcon className="size-5" />
                   <span>12 hours ago</span>
                   <DotIcon className="size-5" />
@@ -93,7 +93,7 @@ export default function PostPage() {
                 <h4 className="font-semibold">10 Replies</h4>
                 <div className="flex flex-col gap-5">
                   <Reply
-                    username="Nicolas"
+                    username="Hoo"
                     avatarUrl="https://github.com/serranoarevalo.png"
                     content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
                     timestamp="12 hours ago"
@@ -111,7 +111,7 @@ export default function PostPage() {
               <AvatarImage src="https://github.com/serranoarevalo.png" />
             </Avatar>
             <div className="flex flex-col">
-              <h4 className="text-lg font-medium">Nicolas</h4>
+              <h4 className="text-lg font-medium">Hoo</h4>
               <Badge variant="secondary">Entrepreneur</Badge>
             </div>
           </div>

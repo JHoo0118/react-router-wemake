@@ -54,13 +54,13 @@ export default function HomePage() {
         </div>
         {Array.from({ length: 11 }).map((_, index) => (
           <PostCard
-            key={`postId-${index}`}
-            id={`postId-${index}`}
+            key={index}
+            id={index}
             title="What is the best productivity tool?"
-            author="Nico"
+            author="Hoo"
             authorAvatarUrl="https://github.com/apple.png"
             category="Productivity"
-            postedAt="12 hours ago"
+            postedAt={new Date()}
           />
         ))}
       </div>

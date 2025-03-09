@@ -10,13 +10,13 @@ export default function ProfilePostsPage({ params }: Route.ComponentProps) {
     <div className="flex flex-col gap-5">
       {Array.from({ length: 5 }).map((_, index) => (
         <PostCard
-          key={`postId-${index}`}
-          id={`postId-${index}`}
+          key={index}
+          id={index}
           title="What is the best productivity tool?"
-          author="Nico"
+          author="Hoo"
           authorAvatarUrl="https://github.com/apple.png"
           category="Productivity"
-          postedAt="12 hours ago"
+          postedAt={new Date()}
           expanded
         />
       ))}
