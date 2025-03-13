@@ -23,6 +23,12 @@ export const loader = async () => {
   return { topics, posts };
 };
 
+export const clientLoader = async ({
+  serverLoader,
+}: Route.ClientLoaderArgs) => {
+  //track analytics
+};
+
 export default function CommunityPage({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const sorting = searchParams.get("sorting") || "newest";

@@ -25,7 +25,9 @@ export default function HomePage() {
             The best products made by our community today.
           </p>
           <Button variant="link" asChild className="text-lg p-0">
-            <Link to="/products/leaderboards">Explore all products &rarr;</Link>
+            <Link prefetch="viewport" to="/teams">
+              Explore all teams &rarr;
+            </Link>
           </Button>
         </div>
         {Array.from({ length: 11 }).map((_, index) => (
@@ -54,13 +56,13 @@ export default function HomePage() {
         </div>
         {Array.from({ length: 11 }).map((_, index) => (
           <PostCard
-            key={index}
+            key={`postId-${index}`}
             id={index}
             title="What is the best productivity tool?"
             author="Hoo"
             authorAvatarUrl="https://github.com/apple.png"
             category="Productivity"
-            postedAt={new Date()}
+            postedAt="12 hours ago"
           />
         ))}
       </div>
