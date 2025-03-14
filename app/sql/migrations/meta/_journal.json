@@ -64,6 +64,41 @@
       "when": 1741871305650,
       "tag": "0008_deep_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1741959261511,
+      "tag": "0009_stiff_boomerang",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1741959822967,
+      "tag": "0010_wet_tomorrow_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1741959885596,
+      "tag": "0011_breezy_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1741959939011,
+      "tag": "0012_overjoyed_starhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1741959986596,
+      "tag": "0013_bored_karnak",
+      "breakpoints": true
     }
   ]
 }
