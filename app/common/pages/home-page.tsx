@@ -53,9 +53,9 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         {loaderData.products.map((product, index) => (
           <ProductCard
             key={product.product_id}
-            id={product.product_id.toString()}
+            id={product.product_id}
             name={product.name}
-            description={product.description}
+            description={product.tagline}
             reviewsCount={product.reviews}
             viewsCount={product.views}
             votesCount={product.upvotes}
@@ -156,8 +156,8 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           <TeamCard
             key={team.team_id}
             id={team.team_id}
-            leaderUsername={team.team_leader.username}
-            leaderAvatarUrl={team.team_leader.avatar}
+            leaderUsername={team.team_leader?.username}
+            leaderAvatarUrl={team.team_leader?.avatar}
             positions={team.roles.split(",")}
             projectDescription={team.product_description}
           />
