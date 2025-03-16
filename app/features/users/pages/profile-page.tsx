@@ -1,9 +1,4 @@
 import { useOutletContext } from "react-router";
-import type { Route } from "./+types/profile-page";
-
-export const meta: Route.MetaFunction = () => {
-  return [{ title: "Profile | wemake" }];
-};
 
 export default function ProfilePage() {
   const { headline, bio } = useOutletContext<{
