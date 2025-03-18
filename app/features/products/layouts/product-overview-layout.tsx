@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "~/common/components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/product-overview-layout";
 import { getProductById } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -14,9 +15,13 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export const loader = async ({
+  request,
   params,
 }: Route.LoaderArgs & { params: { productId: string } }) => {
-  const product = await getProductById(params.productId);
+  const { client, headers } = makeSSRClient(request);
+  const product = await getProductById(client, {
+    productId: params.productId,
+  });
   return { product };
 };
 
@@ -29,8 +34,8 @@ export default function ProductOverviewLayout({
         <div className="flex gap-10">
           <div className="size-40 rounded-xl shadow-xl bg-primary/50">
             <img
-              src={loaderData.product.icon ?? ""}
-              alt={loaderData.product.name ?? ""}
+              src={loaderData.product.icon}
+              alt={loaderData.product.name}
               className="size-full object-cover"
             />
           </div>
@@ -44,7 +49,7 @@ export default function ProductOverviewLayout({
                     key={i}
                     className="size-4"
                     fill={
-                      i < Math.floor(loaderData.product.average_rating ?? 0)
+                      i < Math.floor(loaderData.product.average_rating)
                         ? "currentColor"
                         : "none"
                     }

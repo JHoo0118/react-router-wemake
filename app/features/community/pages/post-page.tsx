@@ -19,14 +19,16 @@ import { Badge } from "~/common/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
 import { getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const post = await getPostById(params.postId);
-  const replies = await getReplies(params.postId);
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const post = await getPostById(client, { postId: params.postId });
+  const replies = await getReplies(client, { postId: params.postId });
   return { post, replies };
 };
 
@@ -70,9 +72,7 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
                   <span>{loaderData.post.author_name}</span>
                   <DotIcon className="size-5" />
                   <span>
-                    {DateTime.fromISO(
-                      loaderData.post.created_at ?? ""
-                    ).toRelative()}
+                    {DateTime.fromISO(loaderData.post.created_at).toRelative()}
                   </span>
                   <DotIcon className="size-5" />
                   <span>{loaderData.post.replies} replies</span>
@@ -118,9 +118,7 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
         <aside className="col-span-2 space-y-5 border rounded-lg p-6 shadow-sm">
           <div className="flex gap-5">
             <Avatar className="size-14">
-              <AvatarFallback>
-                {loaderData.post.author_name?.[0]}
-              </AvatarFallback>
+              <AvatarFallback>{loaderData.post.author_name[0]}</AvatarFallback>
               {loaderData.post.author_avatar ? (
                 <AvatarImage src={loaderData.post.author_avatar} />
               ) : null}
@@ -137,9 +135,7 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
           <div className="gap-2 text-sm flex flex-col">
             <span>
               🎂 Joined{" "}
-              {DateTime.fromISO(
-                loaderData.post.author_created_at ?? ""
-              ).toRelative()}{" "}
+              {DateTime.fromISO(loaderData.post.author_created_at).toRelative()}{" "}
               ago
             </span>
             <span>🚀 Launched {loaderData.post.products} products</span>

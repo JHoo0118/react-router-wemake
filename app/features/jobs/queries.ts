@@ -1,48 +1,45 @@
-import client from "~/supa-client";
+import pkg from "@supabase/supabase-js";
+import type { Database } from "~/supa-client";
 
-export const getJobs = async ({
-  limit,
-  location,
-  type,
-  salary,
-}: {
-  limit: number;
-  location?: "remote" | "in-person" | "hybrid";
-  type?: "full-time" | "part-time" | "freelance" | "internship";
-  salary?:
-    | "$0 - $50,000"
-    | "$50,000 - $70,000"
-    | "$70,000 - $100,000"
-    | "$100,000 - $120,000"
-    | "$120,000 - $150,000"
-    | "$150,000 - $250,000"
-    | "$250,000+";
-}) => {
+export const getJobs = async (
+  client: pkg.SupabaseClient<Database>,
+  {
+    limit,
+    location,
+    type,
+    salary,
+  }: {
+    limit: number;
+    location?: string;
+    type?: string;
+    salary?: string;
+  }
+) => {
   const baseQuery = client
     .from("jobs")
     .select(
       `
-     job_id,
-     position,
-     overview,
-     company_name,
-     company_logo,
-     company_location,
-     job_type,
-     location,
-     salary_range,
-     created_at
-     `
+    job_id,
+    position,
+    overview,
+    company_name,
+    company_logo,
+    company_location,
+    job_type,
+    location,
+    salary_range,
+    created_at
+    `
     )
     .limit(limit);
   if (location) {
-    baseQuery.eq("location", location);
+    baseQuery.eq("location", location as any);
   }
   if (type) {
-    baseQuery.eq("job_type", type);
+    baseQuery.eq("job_type", type as any);
   }
   if (salary) {
-    baseQuery.eq("salary_range", salary);
+    baseQuery.eq("salary_range", salary as any);
   }
   const { data, error } = await baseQuery;
   if (error) {
@@ -51,7 +48,10 @@ export const getJobs = async ({
   return data;
 };
 
-export const getJobById = async (jobId: string) => {
+export const getJobById = async (
+  client: pkg.SupabaseClient<Database>,
+  { jobId }: { jobId: string }
+) => {
   const { data, error } = await client
     .from("jobs")
     .select("*")

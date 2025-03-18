@@ -3,10 +3,11 @@ import type { Route } from "./+types/jobs-page";
 import { JobCard } from "../components/job-card";
 import { Button } from "~/common/components/ui/button";
 import { JOB_TYPES, LOCATION_TYPES, SALARY_RANGE } from "../constants";
-import { data, useSearchParams } from "react-router";
+import { data, Link, useSearchParams } from "react-router";
 import { cn } from "~/lib/utils";
 import { getJobs } from "../queries";
 import { z } from "zod";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -39,22 +40,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       { status: 400 }
     );
   }
-  const jobs = await getJobs({
+  const { client, headers } = makeSSRClient(request);
+  const jobs = await getJobs(client, {
     limit: 40,
-    location: parsedData.location as "remote" | "in-person" | "hybrid",
-    type: parsedData.type as
-      | "full-time"
-      | "part-time"
-      | "freelance"
-      | "internship",
-    salary: parsedData.salary as
-      | "$0 - $50,000"
-      | "$50,000 - $70,000"
-      | "$70,000 - $100,000"
-      | "$100,000 - $120,000"
-      | "$120,000 - $150,000"
-      | "$150,000 - $250,000"
-      | "$250,000+",
+    location: parsedData.location,
+    type: parsedData.type,
+    salary: parsedData.salary,
   });
   return { jobs };
 };
