@@ -1,10 +1,10 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import pkg from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "~/supa-client";
 import { formSchema } from "./pages/submit-team-page";
 
 export const createTeam = async (
-  client: SupabaseClient<Database>,
+  client: pkg.SupabaseClient<Database>,
   userId: string,
   team: z.infer<typeof formSchema>
 ) => {

@@ -1,10 +1,10 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import pkg from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "~/supa-client";
 import { formSchema } from "./pages/submit-job-page";
 
 export const createJob = async (
-  client: SupabaseClient<Database>,
+  client: pkg.SupabaseClient<Database>,
   data: z.infer<typeof formSchema>
 ) => {
   const { data: jobData, error } = await client
