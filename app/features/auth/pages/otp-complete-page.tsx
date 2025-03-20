@@ -11,7 +11,7 @@ export const meta: Route.MetaFunction = () => {
 };
 
 const formSchema = z.object({
-  email: z.string().email(),
+  phone: z.string(),
   otp: z.string().min(6).max(6),
 });
 
@@ -23,13 +23,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
   if (!success) {
     return { fieldErrors: error.flatten().fieldErrors };
   }
-  const { email, otp } = data;
+  const { phone, otp } = data;
   const { client, headers } = makeSSRClient(request);
 
   const { error: verifyError } = await client.auth.verifyOtp({
-    email,
+    phone,
     token: otp,
-    type: "email",
+    type: "sms",
   });
   if (verifyError) {
     return { verifyError: verifyError.message };
@@ -39,7 +39,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function OtpPage({ actionData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
-  const email = searchParams.get("email");
+  const phone = searchParams.get("phone");
   const navigation = useNavigation();
   const isSubmitting =
     navigation.state === "submitting" || navigation.state === "loading";
@@ -54,18 +54,18 @@ export default function OtpPage({ actionData }: Route.ComponentProps) {
         </div>
         <Form className="w-full space-y-4" method="post">
           <InputPair
-            label="Email"
-            description="Enter your email address"
-            name="email"
-            defaultValue={email || ""}
-            id="email"
+            label="Phone"
+            description="Enter your phone number"
+            name="phone"
+            defaultValue={phone || ""}
+            id="phone"
             required
-            type="email"
-            placeholder="i.e wemake@example.com"
+            type="tel"
+            placeholder="i.e 1234567890"
           />
           {actionData && "fieldErrors" in actionData && (
             <p className="text-sm text-red-500">
-              {actionData.fieldErrors?.email?.join(", ")}
+              {actionData.fieldErrors?.phone?.join(", ")}
             </p>
           )}
           <InputPair
