@@ -12,7 +12,7 @@ import {
 import { Button } from "~/common/components/ui/button";
 import { EyeIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 
 interface NotificationCardProps {
   avatarUrl: string;
@@ -24,6 +24,7 @@ interface NotificationCardProps {
   productName?: string;
   payloadId?: number;
   postTitle?: string;
+  id: number;
 }
 
 export function NotificationCard({
@@ -36,6 +37,7 @@ export function NotificationCard({
   productName,
   postTitle,
   payloadId,
+  id,
 }: NotificationCardProps) {
   const getMessage = (type: "follow" | "review" | "reply") => {
     switch (type) {
@@ -47,8 +49,12 @@ export function NotificationCard({
         return " replied to your post: ";
     }
   };
+  const fetcher = useFetcher();
+  const optimiscitSeen = fetcher.state === "idle" ? seen : true;
   return (
-    <Card className={cn("min-w-[450px]", seen ? "" : "bg-yellow-500/60")}>
+    <Card
+      className={cn("min-w-[450px]", optimiscitSeen ? "" : "bg-yellow-500/60")}
+    >
       <CardHeader className="flex flex-row gap-5 space-y-0 items-start">
         <Avatar className="">
           <AvatarImage src={avatarUrl} />
@@ -73,9 +79,13 @@ export function NotificationCard({
         </div>
       </CardHeader>
       <CardFooter className="flex justify-end">
-        <Button variant="outline" size="icon">
-          <EyeIcon className="w-4 h-4" />
-        </Button>
+        {optimiscitSeen ? null : (
+          <fetcher.Form method="post" action={`/my/notifications/${id}/see`}>
+            <Button variant="outline" size="icon">
+              <EyeIcon className="w-4 h-4" />
+            </Button>
+          </fetcher.Form>
+        )}
       </CardFooter>
     </Card>
   );
