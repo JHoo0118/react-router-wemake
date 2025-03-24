@@ -94,3 +94,17 @@ export const getLoggedInUserId = async (
   }
   return data.user.id;
 };
+
+export const getProductsByUserId = async (
+  client: pkg.SupabaseClient<Database>,
+  { userId }: { userId: string }
+) => {
+  const { data, error } = await client
+    .from("products")
+    .select(`name, product_id`)
+    .eq("profile_id", userId);
+  if (error) {
+    throw error;
+  }
+  return data;
+};
