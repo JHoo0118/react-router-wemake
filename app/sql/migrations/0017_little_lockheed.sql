@@ -1,1 +1,1 @@
--- DROP TABLE "auth"."users" CASCADE;
+DELETE TYPE "public"."notification_type";

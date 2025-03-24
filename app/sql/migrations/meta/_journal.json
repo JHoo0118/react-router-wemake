@@ -127,6 +127,20 @@
       "when": 1742821708807,
       "tag": "0017_little_lockheed",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1742822394263,
+      "tag": "0018_great_vengeance",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1742822653271,
+      "tag": "0019_easy_silhouette",
+      "breakpoints": true
     }
   ]
 }
