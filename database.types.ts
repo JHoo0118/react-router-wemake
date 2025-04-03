@@ -269,22 +269,22 @@ export type Database = {
           content: string
           created_at: string
           message_id: number
-          message_room_id: number | null
-          sender_id: string | null
+          message_room_id: number
+          sender_id: string
         }
         Insert: {
           content: string
           created_at?: string
           message_id?: never
-          message_room_id?: number | null
-          sender_id?: string | null
+          message_room_id: number
+          sender_id: string
         }
         Update: {
           content?: string
           created_at?: string
           message_id?: never
-          message_room_id?: number | null
-          sender_id?: string | null
+          message_room_id?: number
+          sender_id?: string
         }
         Relationships: [
           {
@@ -865,6 +865,39 @@ export type Database = {
         }
         Relationships: []
       }
+      messages_view: {
+        Row: {
+          avatar: string | null
+          last_message: string | null
+          message_room_id: number | null
+          name: string | null
+          other_profile_id: string | null
+          profile_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_room_members_message_room_id_message_rooms_message_room"
+            columns: ["message_room_id"]
+            isOneToOne: false
+            referencedRelation: "message_rooms"
+            referencedColumns: ["message_room_id"]
+          },
+          {
+            foreignKeyName: "message_room_members_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "message_room_members_profile_id_profiles_profile_id_fk"
+            columns: ["other_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       product_overview_view: {
         Row: {
           average_rating: number | null
@@ -900,6 +933,15 @@ export type Database = {
           product_views: number
           product_visits: number
           month: string
+        }[]
+      }
+      get_room: {
+        Args: {
+          from_user_id: string
+          to_user_id: string
+        }
+        Returns: {
+          message_room_id: number
         }[]
       }
       track_event: {
