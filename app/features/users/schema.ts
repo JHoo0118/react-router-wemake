@@ -3,6 +3,7 @@ import {
   boolean,
   jsonb,
   pgEnum,
+  pgPolicy,
   pgSchema,
   pgTable,
   primaryKey,
@@ -10,12 +11,14 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { authenticatedRole, authUid, authUsers } from "drizzle-orm/supabase";
 import { products } from "../products/schema";
 import { posts } from "../community/schema";
+import { sql } from "drizzle-orm";
 
-const users = pgSchema("auth").table("users", {
-  id: uuid().primaryKey(),
-});
+// const users = pgSchema("auth").table("users", {
+//   id: uuid().primaryKey(),
+// });
 
 export const roles = pgEnum("role", [
   "developer",
@@ -28,35 +31,41 @@ export const roles = pgEnum("role", [
 export const profiles = pgTable("profiles", {
   profile_id: uuid()
     .primaryKey()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => authUsers.id, { onDelete: "cascade" }),
   avatar: text(),
   name: text().notNull(),
   username: text().notNull(),
   headline: text(),
   bio: text(),
   role: roles().default("developer").notNull(),
-  stats: jsonb().$type<{
-    followers: number;
-    following: number;
-  }>(),
+  stats: jsonb()
+    .$type<{
+      followers: number;
+      following: number;
+    }>()
+    .default({ followers: 0, following: 0 }),
   views: jsonb(),
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 });
 
-export const follows = pgTable("follows", {
-  follower_id: uuid()
-    .references(() => profiles.profile_id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  following_id: uuid()
-    .references(() => profiles.profile_id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  created_at: timestamp().notNull().defaultNow(),
-});
+export const follows = pgTable(
+  "follows",
+  {
+    follower_id: uuid()
+      .references(() => profiles.profile_id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    following_id: uuid()
+      .references(() => profiles.profile_id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    created_at: timestamp().notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.follower_id, table.following_id] })]
+);
 
 export const notificationType = pgEnum("notification_type", [
   "follow",
@@ -110,6 +119,12 @@ export const messageRoomMembers = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.message_room_id, table.profile_id] }),
+    pgPolicy("message_room_members_policy", {
+      for: "select",
+      to: authenticatedRole,
+      as: "permissive",
+      using: sql`public.is_user_member(${table.message_room_id}, auth.uid())`,
+    }),
   ]
 );
 
@@ -130,3 +145,34 @@ export const messages = pgTable("messages", {
   content: text().notNull(),
   created_at: timestamp().notNull().defaultNow(),
 });
+
+export const todos = pgTable(
+  "todos",
+  {
+    todo_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+    title: text().notNull(),
+    completed: boolean().notNull().default(false),
+    created_at: timestamp().notNull().defaultNow(),
+    profile_id: uuid()
+      .references(() => profiles.profile_id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+  },
+  (table) => [
+    pgPolicy("todos-insert-policy", {
+      for: "insert",
+      to: authenticatedRole,
+      as: "permissive",
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy("todos-select-policy", {
+      for: "select",
+      to: authenticatedRole,
+      as: "permissive",
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+  ]
+);
