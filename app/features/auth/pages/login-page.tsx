@@ -104,6 +104,13 @@ export default function LoginPage({ actionData }: Route.ComponentProps) {
             <p className="text-sm text-red-500">{actionData.loginError}</p>
           )}
         </Form>
+        <Button
+          onClick={() => {
+            throw new Error("some error thrown in a button!!!!!!");
+          }}
+        >
+          Make error
+        </Button>
         <AuthButtons />
       </div>
     </div>

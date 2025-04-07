@@ -27,6 +27,7 @@
     "@react-router/cloudflare": "^7.5.0",
     "@react-router/node": "^7.3.0",
     "@react-router/serve": "^7.3.0",
+    "@sentry/react-router": "^9.11.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.1",
     "@tosspayments/tosspayments-sdk": "^2.3.4",

@@ -1,43 +1,48 @@
 import { PassThrough } from "node:stream";
+
+import type { AppLoadContext, EntryContext } from "react-router";
 import { createReadableStreamFromReadable } from "@react-router/node";
+import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
+import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import {
-  type AppLoadContext,
-  type EntryContext,
-  ServerRouter,
-} from "react-router";
+import * as Sentry from "@sentry/node";
+import { type HandleErrorFunction } from "react-router";
 
-// Reject all pending promises from handler functions after 10 seconds
-export const streamTimeout = 10000;
+export const streamTimeout = 5_000;
 
-export default async function handleRequest(
+export default function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  context: EntryContext,
-  appContext: AppLoadContext
+  routerContext: EntryContext,
+  loadContext: AppLoadContext
 ) {
-  const callbackName = isbot(request.headers.get("user-agent"))
-    ? "onAllReady"
-    : "onShellReady";
-
   return new Promise((resolve, reject) => {
-    let didError = false;
+    let shellRendered = false;
+    let userAgent = request.headers.get("user-agent");
+
+    // Ensure requests from bots and SPA Mode renders wait for all content to load before responding
+    // https://react.dev/reference/react-dom/server/renderToPipeableStream#waiting-for-all-content-to-load-for-crawlers-and-static-generation
+    let readyOption: keyof RenderToPipeableStreamOptions =
+      (userAgent && isbot(userAgent)) || routerContext.isSpaMode
+        ? "onAllReady"
+        : "onShellReady";
 
     const { pipe, abort } = renderToPipeableStream(
-      <ServerRouter context={context} url={request.url} />,
+      <ServerRouter context={routerContext} url={request.url} />,
       {
-        [callbackName]: () => {
+        [readyOption]() {
+          shellRendered = true;
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
+
           responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            // @ts-expect-error - We purposely do not define the body as existent so it's not used inside loaders as it's injected there as well
-            appContext.body(stream, {
+            new Response(stream, {
               headers: responseHeaders,
-              status: didError ? 500 : responseStatusCode,
+              status: responseStatusCode,
             })
           );
 
@@ -47,14 +52,28 @@ export default async function handleRequest(
           reject(error);
         },
         onError(error: unknown) {
-          didError = true;
-          // biome-ignore lint/suspicious/noConsole: We console log the error
-          console.error(error);
+          responseStatusCode = 500;
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
         },
       }
     );
-    // Abort the streaming render pass after 11 seconds so to allow the rejected
-    // boundaries to be flushed
+
+    // Abort the rendering stream after the `streamTimeout` so it has tine to
+    // flush down the rejected boundaries
     setTimeout(abort, streamTimeout + 1000);
   });
 }
+
+export const handleError: HandleErrorFunction = (error, { request }) => {
+  // React Router may abort some interrupted requests, report those
+  if (!request.signal.aborted) {
+    Sentry.captureException(error);
+    // make sure to still log the error so you can see it
+    console.error(error);
+  }
+};

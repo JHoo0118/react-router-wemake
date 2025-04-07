@@ -6,4 +6,13 @@ export default {
   // Server-side render by default, to enable SPA mode set this to `false`
   ssr: true,
   presets: [vercelPreset()],
+  buildEnd: async ({ viteConfig, reactRouterConfig, buildManifest }) => {
+    // ...
+    // Call this at the end of the hook
+    // await sentryOnBuildEnd({
+    //   viteConfig,
+    //   reactRouterConfig,
+    //   buildManifest,
+    // });
+  },
 } satisfies Config;
